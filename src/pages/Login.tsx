@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from "react-router-dom";
-import { login } from '../api/api';
+import { login, loginCheck } from '../api/api';
 import Seo from '../Layout/Seo';
 import './login.css';
 interface ILogin {
@@ -11,17 +11,32 @@ interface ILogin {
 const Login = () => {
   const navigate = useNavigate();
   const [inputValue, setInputValue] = useState<ILogin>({ id: "", psword: "" });
-  const onLogin = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (inputValue.id === "") return alert("아이디를 입력해주세요.");
-    if (inputValue.psword === "") return alert("비밀번호를 입력해주세요");
-    
-    const res = await login(inputValue);
+
+  useEffect(() => {
+    async function isLogin() { 
+      const { isLogined, loginData } = await loginCheck();
+      if(isLogined) {
+        //console.log(loginData); 로그인 데이터 저장
+        navigate('/');
+      }   
+    }      
+    isLogin();
+  }, []);
+
+  const loginHandler = async (Userdata: ILogin) => {
+    const res = await login(Userdata);
     if(res.success) {
       navigate('/');
     } else {
       alert(res.msg);
     }
+  }
+
+  const onLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (inputValue.id === "") return alert("아이디를 입력해주세요.");
+    if (inputValue.psword === "") return alert("비밀번호를 입력해주세요");
+    loginHandler(inputValue);    
   }
 
   return (
