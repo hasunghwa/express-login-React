@@ -6,7 +6,7 @@ interface IUserProps {
   name?: string,
 }
 
-export const loginCheck = async () => { 
+export const loginCheck = async (): Promise<any> => { 
   const response = await axios.get(`http://localhost:5000/loginCheck`); 
   return response.data;
 }
